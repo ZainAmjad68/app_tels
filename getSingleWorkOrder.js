@@ -2,31 +2,32 @@ const accessToken = require("./accessToken");
 const request = require("./request");
 const _ = require("lodash");
 
-let url = "https://services.tels.net/workOrders/v1/workOrders";
-
+// these would be associated with the Resident on the backend
 let workOrders = ["53768707", "53768589", "53768584"];
 
-async function getWorkOrder() {
+async function getWorkOrder(workOrder) {
+  let url = "https://services.tels.net/workOrders/v1/workOrders";
   let access_token = await accessToken.refreshAccessToken();
   console.log("Access Token is:", access_token);
 
-  url = new URL(url);
-  let searchParams = url.searchParams;
+  url = `${url}/${workOrder}`;
 
-  for (var workOrder in workOrders) {
-    searchParams.set(workOrder, workOrders[workOrder]);
-  }
-
-  var new_url = url.toString();
-  console.log(new_url);
+  console.log(url);
 
   let response = await request.get(url, access_token);
 
-  console.log(response);
-  if (_.isArray(response.workOrders)) {
-    console.log("Number of Work Orders in the Facility:", response.total);
-    console.log("Details of all the Work Orders:", response.workOrders);
-  }
+  return _.pick(response, ["title", "description", "createdWhen"]);
 }
 
-getWorkOrder();
+async function printAllWorkOrdersOfResident() {
+  let allWorkOrderInfo = [];
+
+  for (const workOrder of workOrders) {
+    const resp = await getWorkOrder(workOrder);
+    allWorkOrderInfo.push(resp);
+  }
+
+  console.log(allWorkOrderInfo);
+}
+
+printAllWorkOrdersOfResident();
