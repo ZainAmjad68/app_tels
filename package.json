@@ -1,21 +1,48 @@
 {
   "name": "app_tels",
   "version": "1.0.0",
-  "description": "",
-  "main": "accessToken.js",
+  "description": "IN-1283",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caremerge/app_tels.git"
+  },
+  "keywords": [],
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/caremerge/app_tels/issues"
+  },
+  "homepage": "https://github.com/caremerge/app_tels#readme",
   "dependencies": {
-    "cross-fetch": "^3.1.4",
-    "decompress-response": "^7.0.0",
-    "lodash": "^4.17.21",
-    "node-fetch": "^3.0.0",
-    "node-gzip": "^1.1.2",
+    "aws-sdk": "^2.425.0",
+    "aws-serverless-express": "^3.3.5",
+    "bluebird": "^3.7.2",
+    "body-parser": "^1.18.3",
+    "bunyan": "^1.8.12",
+    "claudia-api-builder": "^4.1.2",
+    "convict": "^4.4.1",
+    "ejs": "^2.6.1",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "helmet": "^3.15.0",
+    "jsonwebtoken": "^8.4.0",
+    "lodash": "^4.17.11",
+    "mailgun": "^0.5.0",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.23",
+    "nodemon": "^1.18.9",
+    "parsleyjs": "^2.9.2",
+    "path": "^0.12.7",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
-    "zlib": "^1.0.5"
+    "requestretry": "^3.1.0",
+    "rsvp": "^4.8.4",
+    "url-join": "^4.0.1",
+    "uuid": "^8.3.2"
   }
 }

@@ -1,0 +1,93 @@
+#positionLeft {
+  padding: 20px;
+  display: block;
+  float: left;
+  margin-left: 30px;
+}
+
+#positionRight {
+  padding: 20px;
+  display: block;
+  float: right;
+  margin-right: 30px;
+}
+
+#successModal .modal-body {
+  text-align: center;
+  vertical-align: middle;
+}
+
+#failureModal .modal-body {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Style buttons */
+.action_btn {
+  background-color: #337ab7; /* Blue background */
+  border: none; /* Remove borders */
+  border-radius: 50%;
+  color: white; /* White text */
+  padding: 6px 8px; /* Some padding */
+  font-size: 14px; /* Set a font size */
+  cursor: pointer; /* Mouse pointer on hover */
+}
+
+/* Darker background on mouse-over */
+.action_btn:hover {
+  background-color: #286090;
+}
+
+label,
+span {
+  margin: 0;
+}
+
+#instructions {
+  margin-top: -10px;
+}
+
+#loading-spinner {
+  display: none;
+  position: absolute; /* absolute instead of fixed */
+  width: 100%;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 2;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#loading-spinner::after {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #50d9f1;
+  width: 60px;
+  height: 60px;
+  content: "";
+  display: block;
+  -webkit-animation: spin 0.8s linear infinite;
+  animation: spin 0.8s linear infinite;
+}
