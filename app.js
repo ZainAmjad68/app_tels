@@ -1,6 +1,7 @@
 const express = require("express");
 const helmet = require("helmet");
 const accessTokenModule = require("./modules/accessToken");
+const md = require("./modules/middleware");
 const app = express();
 
 const bodyParser = require("body-parser");
@@ -9,10 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(helmet());
 
-app.use(async function (req, res, next) {
-  req.accessToken = await accessTokenModule.refreshTELSAccessToken();
-  next();
-});
+app.use(md.attachTokenToRequest);
 
 const routes = require("./routes");
 app.use("/api", routes);
