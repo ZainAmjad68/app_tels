@@ -6,6 +6,7 @@ const requestModule = require("../modules/request");
 const config = require("../config");
 const TELS = require("../modules/tels");
 const { categories, priorities } = require("../data/TELS_constants");
+const TELSurls = require("../data/TELS_urls");
 
 // these would be associated with the Resident on the backend
 let dummy = ["53768707", "53998646", "54058430", "53580013", "54133730"];
@@ -30,9 +31,9 @@ exports.init = async function (req, res) {
       priorities,
     });
   } catch (err) {
-    console.log("Error: failed to load the Tels main endpoint");
-    console.log("stack", err.stack);
-    console.log("message", err.message);
+    req.log.info("Error: failed to load the Tels main endpoint");
+    req.log.info("stack", err.stack);
+    req.log.info("message", err.message);
     res.status(err.statusCode).send(err.message);
   }
 };
@@ -41,7 +42,7 @@ exports.getWorkOrders = async function (req, res) {
   try {
     // instead of the user sending him workorder ids, we need to get the user details and extract the workorders saved from there
     let { workOrders } = req.query;
-    console.log("query WorkOrders:", workOrders);
+    req.log.info("query WorkOrders:", workOrders);
     if (_.isArray(workOrders)) {
       // more comprehensive way to handle the workOrders and any associated errors
       let workOrderDetails = await Promise.allSettled(
@@ -58,10 +59,10 @@ exports.getWorkOrders = async function (req, res) {
       return res.status(200).json(_.map(workOrderDetails, "value"));
     }
   } catch (err) {
-    console.log("Error: failed to get the work orders:");
-    console.log("err", err);
-    console.log(err.stack);
-    console.log(err.message);
+    req.log.info("Error: failed to get the work orders:");
+    req.log.info("err", err);
+    req.log.info(err.stack);
+    req.log.info(err.message);
     res.status(err.statusCode).send(err.message);
   }
 };
@@ -93,10 +94,10 @@ exports.getFacilityWorkOrdersByGivingIDdirectly = async function (req, res) {
       response.total = nextPageData.total;
       response.nextPageKey = nextPageData.nextPageKey;
     }
-    console.log(response);
+    req.log.info(response);
     if (_.isArray(response.workOrders)) {
-      console.log("Details of all the Work Orders:", response.workOrders);
-      console.log("Number of Work Orders in the Facility:", response.total);
+      req.log.info("Details of all the Work Orders:", response.workOrders);
+      req.log.info("Number of Work Orders in the Facility:", response.total);
     }
     let workOrderData = _.map(response.workOrders, (workOrder) => {
       return _.pick(workOrder, [
@@ -109,11 +110,11 @@ exports.getFacilityWorkOrdersByGivingIDdirectly = async function (req, res) {
     });
     res.status(200).json(workOrderData);
   } catch (err) {
-    console.log(
+    req.log.info(
       "Error: failed to get work orders for entire facility using IDs"
     );
-    console.log(err.stack);
-    console.log(err.message);
+    req.log.info(err.stack);
+    req.log.info(err.message);
     res.status(err.statusCode).send(err.message);
   }
 };
@@ -121,17 +122,14 @@ exports.getFacilityWorkOrdersByGivingIDdirectly = async function (req, res) {
 exports.getFacilityWorkOrdersByName = async function (req, res) {
   try {
     let facilityName = req.query.facilityName;
-    console.log("Facility Name:", facilityName);
+    req.log.info("Facility Name:", facilityName);
     let TELSfacilityID = await TELS.getTELSfacilityId(
       facilityName,
       req.accessToken
     );
 
-    console.log("TELS facility ID:", TELSfacilityID);
-    let url = urljoin(
-      config.get("tels").baseUrl,
-      config.get("tels").workOrderUrl
-    );
+    req.log.info("TELS facility ID:", TELSfacilityID);
+    let url = urljoin(config.get("tels").baseUrl, TELSurls.workOrderUrl);
     url = new URL(url);
     let searchParams = url.searchParams;
     searchParams.set("businessUnitId", TELSfacilityID);
@@ -151,7 +149,7 @@ exports.getFacilityWorkOrdersByName = async function (req, res) {
       response.total = nextPageData.total;
       response.nextPageKey = nextPageData.nextPageKey;
     }
-    console.log("all the WorkOrders", response);
+    req.log.info("all the WorkOrders", response);
     let workOrderData = _.map(response.workOrders, (workOrder) => {
       return _.pick(workOrder, [
         "authorizationNumber",
@@ -163,11 +161,11 @@ exports.getFacilityWorkOrdersByName = async function (req, res) {
     });
     res.status(200).json(workOrderData);
   } catch (err) {
-    console.log(
+    req.log.info(
       "Error: failed to get work orders for entire facility using Facility Name"
     );
-    console.log(err.stack);
-    console.log(err.message);
+    req.log.info(err.stack);
+    req.log.info(err.message);
     res.status(err.statusCode).send(err.message);
   }
 };
@@ -175,11 +173,8 @@ exports.getFacilityWorkOrdersByName = async function (req, res) {
 exports.createWorkOrder = async function (req, res) {
   try {
     // req.body has form data that is used to create the work order
-    console.log("Request Body:", req.body);
-    let url = urljoin(
-      config.get("tels").baseUrl,
-      config.get("tels").workOrderUrl
-    );
+    req.log.info("Request Body:", req.body);
+    let url = urljoin(config.get("tels").baseUrl, TELSurls.workOrderUrl);
 
     let facilityId = await TELS.getUserFacility(
       "TELS Integration Test",
@@ -195,17 +190,17 @@ exports.createWorkOrder = async function (req, res) {
     );
     // after the work order has been created on TELS, need to save/associate entryIdentifier with CM user
     if (response.wasSuccessful) {
-      console.log("Work Order Creation Successfull");
-      console.log(
+      req.log.info("Work Order Creation Successfull");
+      req.log.info(
         `Associate the entityIdentifier ${response.entityIdentifier} with the resident who sent the request.`
       );
       dummy.push(response.entityIdentifier);
       res.status(200).json(response);
     }
   } catch (err) {
-    console.log("Error: failed to create the work order");
-    console.log(err.stack);
-    console.log(err.message);
+    req.log.info("Error: failed to create the work order");
+    req.log.info(err.stack);
+    req.log.info(err.message);
     res.status(err.statusCode).send(err.message);
   }
 };
@@ -213,7 +208,7 @@ exports.createWorkOrder = async function (req, res) {
 exports.editWorkOrder = async function (req, res) {
   try {
     let workOrders = req.body;
-    console.log("Request Body:", req.body);
+    req.log.info("Request Body:", req.body);
     if (workOrders) {
       const responseStatus = await TELS.editWorkOrder(
         workOrders,
@@ -223,9 +218,9 @@ exports.editWorkOrder = async function (req, res) {
       res.redirect(responseStatus, backURL);
     }
   } catch (err) {
-    console.log("Error: failed to edit the work order");
-    console.log(err.stack);
-    console.log(err.message);
+    req.log.info("Error: failed to edit the work order");
+    req.log.info(err.stack);
+    req.log.info(err.message);
     res.status(err.statusCode).send(err.message);
   }
 };
