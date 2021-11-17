@@ -3,12 +3,10 @@ const urljoin = require("url-join");
 const requestModule = require("../modules/request");
 const config = require("../config");
 const { statuses } = require("../data/TELS_constants");
+const TELSurls = require("../data/TELS_urls");
 
 exports.getWorkOrder = async function (workOrder, access_token) {
-  let url = urljoin(
-    config.get("tels").baseUrl,
-    config.get("tels").workOrderUrl
-  );
+  let url = urljoin(config.get("tels").baseUrl, TELSurls.workOrderUrl);
   url = `${url}/${workOrder}`;
   console.log(url);
 
@@ -36,10 +34,7 @@ exports.getWorkOrder = async function (workOrder, access_token) {
 };
 
 exports.getWorkOrderCategories = async function (access_token) {
-  let url = urljoin(
-    config.get("tels").baseUrl,
-    config.get("tels").workOrderCategories
-  );
+  let url = urljoin(config.get("tels").baseUrl, TELSurls.workOrderCategories);
   console.log(url);
 
   let response = await requestModule.sendRequest("GET", url, access_token);
@@ -49,7 +44,7 @@ exports.getWorkOrderCategories = async function (access_token) {
 exports.getTELSfacilityId = async function (facilityName, access_token) {
   let url = urljoin(
     config.get("tels").baseUrl,
-    config.get("tels").facilityUrl,
+    TELSurls.facilityUrl,
     config.get("caremergeTELSid"),
     "facilities"
   );
@@ -62,7 +57,7 @@ exports.getTELSfacilityId = async function (facilityName, access_token) {
 };
 
 async function getAllFacilities(accessToken) {
-  let url = urljoin(config.get("tels").baseUrl, config.get("tels").facilityUrl);
+  let url = urljoin(config.get("tels").baseUrl, TELSurls.facilityUrl);
 
   url = `${url}/${config.get("caremergeTELSid")}/facilities`;
   let response = await requestModule.sendRequest("GET", url, accessToken);
@@ -82,10 +77,7 @@ exports.getUserFacility = async function (facilityName, accessToken) {
 };
 
 exports.editWorkOrder = async function (workOrders, access_token) {
-  let url = urljoin(
-    config.get("tels").baseUrl,
-    config.get("tels").workOrderUrl
-  );
+  let url = urljoin(config.get("tels").baseUrl, TELSurls.workOrderUrl);
   url = `${url}/${workOrders.authorizationNumber}`;
   console.log(url);
   delete workOrders.authorizationNumber;
