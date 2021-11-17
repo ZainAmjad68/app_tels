@@ -1,0 +1,67 @@
+<div
+  class="modal fade"
+  id="displayWorkOrderModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="displayWorkOrderModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="displayWorkOrderModalLabel"></h4>
+        <span class="text-muted small"
+          >You can change the value of any of these using the Edit Action.</span
+        >
+      </div>
+      <div class="modal-body">
+        <b>Title</b>
+        <p id="title"></p>
+        <b>Description</b>
+        <p id="description"></p>
+        <b>Creation Date</b>
+        <p id="createdWhen"></p>
+        <b>Location</b>
+        <p id="whereLocated"></p>
+        <b>Status</b>
+        <p id="status"></p>
+        <b>Priority</b>
+        <p id="priority"></p>
+        <b>Category</b>
+        <p id="category"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var priorityText = {
+    1: "Critical",
+    2: "High",
+    3: "Medium",
+    4: "Low",
+  };
+
+  $("#displayWorkOrderModal").on("show.bs.modal", function (e) {
+    var editButtonData = $(e.relatedTarget).data("workorderobj");
+    $("#displayWorkOrderModalLabel").text(
+      `Details - Work Order #${editButtonData.authorizationNumber}`
+    );
+
+    $("#title").text(editButtonData.title);
+    $("#description").text(editButtonData.description);
+    $("#createdWhen").text(editButtonData.createdWhen);
+    $("#whereLocated").text(editButtonData.whereLocated);
+    $("#status").text(editButtonData.status);
+    $("#priority").text(priorityText[editButtonData.priority]);
+    $("#category").text(editButtonData.category.name);
+  });
+</script>

@@ -1,0 +1,48 @@
+<div class="container bg-light text-dark">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Order #</th>
+        <th>Title</th>
+        <th>Creation Date</th>
+        <th>Location</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% workOrderDetails.forEach(function(workOrder) {%>
+      <tr class="<% if (workOrder.status === 'Completed') {%> success <%}%>">
+        <td><%=workOrder.authorizationNumber%></td>
+        <td><%=workOrder.title%></td>
+        <td><%=workOrder.createdWhen%></td>
+        <td><%=workOrder.whereLocated%></td>
+        <td><%=workOrder.status%></td>
+        <td>
+          <!-- View Work Order Button -->
+          <button
+            id="viewButton"
+            class="action_btn"
+            title="View Work Order"
+            data-toggle="modal"
+            data-target="#displayWorkOrderModal"
+            data-workOrderObj="<%= JSON.stringify(workOrder); %>"
+          >
+            <i class="fa fa-eye"></i>
+          </button>
+          <!-- Edit Work Order Button -->
+          <button
+            id="editButton"
+            class="action_btn"
+            data-toggle="modal"
+            data-target="#editWorkOrderModal"
+            data-workOrderObj="<%= JSON.stringify(workOrder); %>"
+          >
+            <i class="far fa-edit"></i>
+          </button>
+        </td>
+      </tr>
+      <%});%>
+    </tbody>
+  </table>
+</div>
