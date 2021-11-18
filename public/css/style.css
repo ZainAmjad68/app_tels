@@ -1,3 +1,11 @@
+#footerparent {
+  overflow: hidden;
+  /*  
+  background-image: url("../assets/default-header-overlay.png");
+  margin: 20px;
+  */
+}
+
 #positionLeft {
   padding: 20px;
   display: block;
@@ -10,6 +18,7 @@
   display: block;
   float: right;
   margin-right: 30px;
+  margin-top: 10px;
 }
 
 #successModal .modal-body {

@@ -1,9 +1,10 @@
 const requestModule = require("./request");
 const config = require("../config");
 const urljoin = require("url-join");
+const TELSurls = require("../data/TELS_urls");
 
 async function refreshTELSAccessToken() {
-  let url = urljoin(config.get("tels").baseUrl, config.get("tels").OAuthUrl);
+  let url = urljoin(config.get("tels").baseUrl, TELSurls.OAuthUrl);
   let access_token = {
     refreshToken: config.get("tels").refreshToken,
   };

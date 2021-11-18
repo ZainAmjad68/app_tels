@@ -1,4 +1,10 @@
 <div class="container bg-light text-dark">
+  <% if (!workOrderDetails || workOrderDetails.length < 1) { %>
+  <h3>
+    You have not submitted any maintenance requests. Click "Add a New Work
+    Order" to get started.
+  </h3>
+  <% } else { %>
   <table class="table table-striped">
     <thead>
       <tr>
@@ -23,7 +29,6 @@
           <button
             id="viewButton"
             class="action_btn"
-            title="View Work Order"
             data-toggle="modal"
             data-target="#displayWorkOrderModal"
             data-workOrderObj="<%= JSON.stringify(workOrder); %>"
@@ -45,4 +50,5 @@
       <%});%>
     </tbody>
   </table>
+  <% } %>
 </div>

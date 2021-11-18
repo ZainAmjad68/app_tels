@@ -1,9 +1,15 @@
 const _ = require("lodash");
 const urljoin = require("url-join");
+var AWS = require("aws-sdk");
+
 const requestModule = require("../modules/request");
 const config = require("../config");
 const { statuses } = require("../data/TELS_constants");
 const TELSurls = require("../data/TELS_urls");
+
+var docClient = new AWS.DynamoDB.DocumentClient();
+
+var table = "tels_workorders";
 
 exports.getWorkOrder = async function (workOrder, access_token) {
   let url = urljoin(config.get("tels").baseUrl, TELSurls.workOrderUrl);
@@ -39,6 +45,57 @@ exports.getWorkOrderCategories = async function (access_token) {
 
   let response = await requestModule.sendRequest("GET", url, access_token);
   return response;
+};
+
+exports.getWorkOrdersByResidentID = async function (ResidentID) {
+  let workOrders;
+  var params = {
+    TableName: table,
+    ExpressionAttributeValues: {
+      ":ResidentID": ResidentID,
+    },
+    ExpressionAttributeNames: {
+      "#ResidentID": "ResidentID",
+    },
+    KeyConditionExpression: "#ResidentID = :ResidentID",
+  };
+
+  try {
+    const awsRequest = await docClient.query(params);
+    const result = await awsRequest.promise();
+    console.log("Result fetched from AWS:", result);
+    workOrders = _.map(result.Items, "WorkOrder");
+    console.log("WorkOrders fetched from AWS:", workOrders);
+  } catch (err) {
+    console.log("Unable to query. Error:", JSON.stringify(err, null, 2));
+    return err;
+  }
+
+  return workOrders;
+};
+
+exports.putWorkOrderInDB = async function (ResidentID, WorkOrder) {
+  var params = {
+    TableName: table,
+    Item: {
+      ResidentID: ResidentID,
+      WorkOrder: WorkOrder,
+    },
+  };
+
+  try {
+    console.log("Adding a new item...");
+    const awsRequest = await docClient.put(params);
+    await awsRequest.promise();
+    console.log("Data added into AWS Successfully");
+  } catch (err) {
+    console.log(
+      "Unable to Add Data into DynamoDB. Error:",
+      JSON.stringify(err, null, 2)
+    );
+    return err;
+  }
+  return true;
 };
 
 exports.getTELSfacilityId = async function (facilityName, access_token) {

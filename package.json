@@ -19,7 +19,8 @@
   },
   "homepage": "https://github.com/caremerge/app_tels#readme",
   "dependencies": {
-    "aws-sdk": "^2.425.0",
+    "@vendia/serverless-express": "^4.5.2",
+    "aws-sdk": "^2.1031.0",
     "aws-serverless-express": "^3.3.5",
     "bluebird": "^3.7.2",
     "body-parser": "^1.18.3",

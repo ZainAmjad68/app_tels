@@ -9,13 +9,22 @@ const { categories, priorities } = require("../data/TELS_constants");
 const TELSurls = require("../data/TELS_urls");
 
 // these would be associated with the Resident on the backend
-let dummy = ["53768707", "53998646", "54058430", "53580013", "54133730"];
+// let dummy = ["53768707", "53998646", "54058430", "53580013", "54133730"];
 
 exports.init = async function (req, res) {
   try {
-    let workOrders = dummy;
-    req.log.info(dummy);
-    //let categories = await TELS.getWorkOrderCategories(accessToken);
+    let workOrders;
+    //let workOrders = dummy;
+    //req.log.info(dummy);
+    var ResidentID = "1234";
+
+    let DBresponse = await TELS.getWorkOrdersByResidentID(ResidentID);
+    if (DBresponse && DBresponse.stack && DBresponse.message) {
+      throw DBresponse;
+    }
+    // won't reach here if the returned value is an error
+    workOrders = DBresponse;
+    req.log.info({ workOrders });
     let workOrderDetails = await BlueBird_Promise.map(
       workOrders,
       (workOrder) => {
@@ -32,9 +41,8 @@ exports.init = async function (req, res) {
     });
   } catch (err) {
     req.log.info("Error: failed to load the Tels main endpoint");
-    req.log.info("stack", err.stack);
-    req.log.info("message", err.message);
-    res.status(err.statusCode).send(err.message);
+    req.log.info({ err: err });
+    res.status(err.statusCode || 500).send(err.message);
   }
 };
 
@@ -42,7 +50,7 @@ exports.getWorkOrders = async function (req, res) {
   try {
     // instead of the user sending him workorder ids, we need to get the user details and extract the workorders saved from there
     let { workOrders } = req.query;
-    req.log.info("query WorkOrders:", workOrders);
+    req.log.info({ workOrders }, "query WorkOrders");
     if (_.isArray(workOrders)) {
       // more comprehensive way to handle the workOrders and any associated errors
       let workOrderDetails = await Promise.allSettled(
@@ -60,9 +68,7 @@ exports.getWorkOrders = async function (req, res) {
     }
   } catch (err) {
     req.log.info("Error: failed to get the work orders:");
-    req.log.info("err", err);
-    req.log.info(err.stack);
-    req.log.info(err.message);
+    req.log.info({ err: err });
     res.status(err.statusCode).send(err.message);
   }
 };
@@ -113,8 +119,7 @@ exports.getFacilityWorkOrdersByGivingIDdirectly = async function (req, res) {
     req.log.info(
       "Error: failed to get work orders for entire facility using IDs"
     );
-    req.log.info(err.stack);
-    req.log.info(err.message);
+    req.log.info({ err: err });
     res.status(err.statusCode).send(err.message);
   }
 };
@@ -149,7 +154,7 @@ exports.getFacilityWorkOrdersByName = async function (req, res) {
       response.total = nextPageData.total;
       response.nextPageKey = nextPageData.nextPageKey;
     }
-    req.log.info("all the WorkOrders", response);
+    req.log.info("All the WorkOrders", response);
     let workOrderData = _.map(response.workOrders, (workOrder) => {
       return _.pick(workOrder, [
         "authorizationNumber",
@@ -164,8 +169,7 @@ exports.getFacilityWorkOrdersByName = async function (req, res) {
     req.log.info(
       "Error: failed to get work orders for entire facility using Facility Name"
     );
-    req.log.info(err.stack);
-    req.log.info(err.message);
+    req.log.info({ err: err });
     res.status(err.statusCode).send(err.message);
   }
 };
@@ -190,17 +194,25 @@ exports.createWorkOrder = async function (req, res) {
     );
     // after the work order has been created on TELS, need to save/associate entryIdentifier with CM user
     if (response.wasSuccessful) {
-      req.log.info("Work Order Creation Successfull");
+      req.log.info("Work Order Creation Successfull.");
       req.log.info(
         `Associate the entityIdentifier ${response.entityIdentifier} with the resident who sent the request.`
       );
-      dummy.push(response.entityIdentifier);
+
+      // Resident Id will be put here
+      let ResidentID = "1234";
+      let WorkOrder = response.entityIdentifier;
+
+      let DBresponse = await TELS.putWorkOrderInDB(ResidentID, WorkOrder);
+      if (DBresponse && DBresponse.stack && DBresponse.message) {
+        throw DBresponse;
+      }
+      //dummy.push(response.entityIdentifier);
       res.status(200).json(response);
     }
   } catch (err) {
     req.log.info("Error: failed to create the work order");
-    req.log.info(err.stack);
-    req.log.info(err.message);
+    req.log.info({ err: err });
     res.status(err.statusCode).send(err.message);
   }
 };
@@ -208,7 +220,7 @@ exports.createWorkOrder = async function (req, res) {
 exports.editWorkOrder = async function (req, res) {
   try {
     let workOrders = req.body;
-    req.log.info("Request Body:", req.body);
+    req.log.info({ body: req.body }, "Request Body:");
     if (workOrders) {
       const responseStatus = await TELS.editWorkOrder(
         workOrders,
@@ -219,8 +231,7 @@ exports.editWorkOrder = async function (req, res) {
     }
   } catch (err) {
     req.log.info("Error: failed to edit the work order");
-    req.log.info(err.stack);
-    req.log.info(err.message);
+    req.log.info({ err: err });
     res.status(err.statusCode).send(err.message);
   }
 };

@@ -1,6 +1,5 @@
 const express = require("express");
 const helmet = require("helmet");
-const accessTokenModule = require("./modules/accessToken");
 const md = require("./modules/middleware");
 const app = express();
 

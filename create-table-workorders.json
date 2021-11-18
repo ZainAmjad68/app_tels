@@ -1,0 +1,15 @@
+{
+  "TableName": "tels_workorders",
+  "KeySchema": [
+    { "AttributeName": "ResidentID", "KeyType": "HASH" },
+    { "AttributeName": "WorkOrder", "KeyType": "RANGE" }
+  ],
+  "AttributeDefinitions": [
+    { "AttributeName": "ResidentID", "AttributeType": "S" },
+    { "AttributeName": "WorkOrder", "AttributeType": "S" }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5
+  }
+}
