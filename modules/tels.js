@@ -82,7 +82,6 @@ exports.putWorkOrderInDB = async function (ResidentID, WorkOrder) {
       WorkOrder: WorkOrder,
     },
   };
-
   try {
     console.log("Adding a new item...");
     const awsRequest = await docClient.put(params);
@@ -115,10 +114,8 @@ exports.getTELSfacilityId = async function (facilityName, access_token) {
 
 async function getAllFacilities(accessToken) {
   let url = urljoin(config.get("tels").baseUrl, TELSurls.facilityUrl);
-
   url = `${url}/${config.get("caremergeTELSid")}/facilities`;
   let response = await requestModule.sendRequest("GET", url, accessToken);
-
   console.log(response);
   if (_.isArray(response)) {
     return response;
@@ -138,7 +135,6 @@ exports.editWorkOrder = async function (workOrders, access_token) {
   url = `${url}/${workOrders.authorizationNumber}`;
   console.log(url);
   delete workOrders.authorizationNumber;
-
   let data = [];
   for (var workOrder of Object.keys(workOrders)) {
     data.push({
