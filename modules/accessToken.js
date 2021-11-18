@@ -8,6 +8,7 @@ async function refreshTELSAccessToken() {
   let access_token = {
     refreshToken: config.get("tels").refreshToken,
   };
+
   // use something like express-session or node-cache to keep the data saved during a client's interaction and get from there instead of making a new request everytime
   let response = await requestModule.sendRequest("POST", url, "", access_token);
   return response.accessToken;
