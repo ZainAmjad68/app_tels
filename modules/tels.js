@@ -90,7 +90,7 @@ exports.putWorkOrderInDB = async function (ResidentID, WorkOrder) {
   } catch (err) {
     console.log(
       "Unable to Add Data into DynamoDB. Error:",
-      JSON.stringify(err, null, 2)
+      JSON.stringify(err)
     );
     return err;
   }
